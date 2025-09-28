@@ -131,6 +131,20 @@ header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid 
 footer{padding:24px 0;border-top:1px solid var(--line);color:#9aa4b2}
 .footer-in{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 :focus-visible{outline:2px solid var(--pink-500);outline-offset:3px;border-radius:10px}
+
+/* —— 新增：视频号二维码弹窗 —— */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100}
+.modal.show{display:flex}
+.panel{position:relative;width:min(420px,92vw);background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);text-align:center}
+.panel img{width:260px;height:260px;object-fit:cover;border-radius:12px;margin:6px auto 10px}
+.panel .title{font-weight:800;margin:6px 0 4px}
+.panel .note{color:#667085;font-size:12px;margin:0 0 10px}
+
+/* 新增：按钮（与站内风格统一） */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:800}
+.btn.primary{background:linear-gradient(90deg,var(--pink-600),var(--pink-400));border:none;color:#fff}
+.btn.ghost{background:#fff}
+.close{position:absolute;top:8px;right:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -166,14 +180,14 @@ footer{padding:24px 0;border-top:1px solid var(--line);color:#9aa4b2}
       </div>
       <div>
         <h3 class="title">你好，我是 <b>王欣怡</b></h3>
-        <p class="intro">
+        <div class="intro">
           <p>专注<b>文案创作 · 视频剪辑 · 采访拍摄 · 海报设计</b></p>
           <p>北京体育大学新闻学大四在读，主要实习经历为搜狐互联网和北京新浪两段内容运营，账号定位分别为深度访谈长视频和娱乐快消短视频；</p>
           <p>在校园与实习中长期配合采访与专题片，能够独立完成视频制作的完整链路；对社会热点和网络热梗有较高敏锐度；</p>
           <p>我擅长把复杂信息转成好理解、好传播的内容与视觉：从选题与脚本、到拍摄与剪辑、再到演示与复盘；</p>
           <p>抗压能力和综合能力较强，能够和人高效沟通，并且及时反馈。</p>
-          <p>期待在 <b>内容 / 策划 / 采访</b> 等方向做出更有影响力的作品。
-        </p>
+          <p>期待在 <b>内容 / 策划 / 采访</b> 等方向做出更有影响力的作品。</p>
+        </div>
       </div>
     </div>
   </div>
@@ -263,11 +277,11 @@ footer{padding:24px 0;border-top:1px solid var(--line);color:#9aa4b2}
   </div>
 </section>
 
-<!-- VIDEO：本地静态封面（image/） -->
+<!-- VIDEO：本地静态封面（含微信视频号卡片） -->
 <section id="video" class="section">
   <div class="wrap">
     <h2 class="section-title">VIDEO | 视频作品</h2>
-    <p class="lead">点击缩略图在新标签页打开 B 站、小红书视频。</p>
+    <p class="lead">点击缩略图在新标签页打开 B 站、小红书视频；视频号支持扫码观看。</p>
     <div class="gallery">
       <article class="card">
         <a class="thumb" href="https://www.bilibili.com/video/BV1iqEtziEyx" target="_blank" rel="noopener">
@@ -298,10 +312,21 @@ footer{padding:24px 0;border-top:1px solid var(--line);color:#9aa4b2}
         <div class="card-body"><b>【莉莉丝 | 这家书店让女性彼此看见】专访</b><p class="muted">采访 / 撰稿</p></div>
       </article>
       <article class="card">
-        <a class="thumb" href="https://www.xiaohongshu.com/discovery/item/68c38d39000000001c0321e2?source=webshare&xhsshare=pc_web&xsec_token=YBP6JxWrEEWwMi1BmAlrG_BffEiQWJA2o5V8r7aA6Pxxs=&xsec_source=pc_share" target="_blank" rel="noopener">
+        <a class="thumb" href="https://www.xiaohongshu.com/discovery/item/68c38d39000000001c0321e2?source=webshare&xhsshare=pc_web" target="_blank" rel="noopener">
           <img src="image/video-6.png" alt="【汤臣一品老化迹象严重】营销短视频" loading="lazy">
         </a>
         <div class="card-body"><b>【汤臣一品老化迹象严重】营销短视频</b><p class="muted">选题 / 剪辑</p></div>
+      </article>
+
+      <!-- 新增：微信视频号卡片（点击弹窗二维码） -->
+      <article class="card">
+        <a class="thumb" href="#" onclick="openChannelsQR(event)">
+          <img src="image/video-wechat.jpg" alt="【微信视频号】我的作品" loading="lazy">
+        </a>
+        <div class="card-body">
+          <b>【微信视频号】我的作品</b>
+          <p class="muted">用微信扫码观看</p>
+        </div>
       </article>
     </div>
   </div>
@@ -401,16 +426,28 @@ footer{padding:24px 0;border-top:1px solid var(--line);color:#9aa4b2}
   </div>
 </footer>
 
+<!-- 新增：视频号二维码弹窗（点击外层可关闭） -->
+<div id="channelsModal" class="modal" role="dialog" aria-modal="true" aria-label="微信视频号二维码"
+     onclick="if(event.target===this) closeChannelsQR()">
+  <div class="panel">
+    <button class="close" onclick="closeChannelsQR()" aria-label="关闭弹窗">关闭</button>
+    <div class="title">微信视频号</div>
+    <p class="note">用微信扫码即可打开我的视频号作品</p>
+    <img src="image/qr-channel.jpg" alt="视频号二维码">
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:6px">
+      <a class="btn primary" href="weixin://" rel="noopener">尝试在微信中打开</a>
+      <button class="btn ghost" onclick="closeChannelsQR()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // 仅保留年份（不再请求外部封面）
+  // 年份
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // 视频号弹窗
+  function openChannelsQR(e){ if(e) e.preventDefault(); document.getElementById('channelsModal').classList.add('show'); }
+  function closeChannelsQR(){ document.getElementById('channelsModal').classList.remove('show'); }
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
